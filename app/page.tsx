@@ -1,113 +1,177 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect, useRef } from "react";
+import Content from "./components/Content.tsx";
+import TaskBar from "./components/TaskBar.tsx";
+import Window from "./components/Window.tsx";
+import { Props } from "react-rnd";
+import App, { webApp } from "./types/App.tsx";
+import Browser from "./components/apps/Browser.tsx";
+
+type WindowData = {
+	id: number;
+	title: string;
+	default: Props["default"];
+	content: React.ReactNode;
+	maximized: boolean;
+	minimized: boolean;
+	zIndex: number;
+	isOpening: boolean;
+	state?: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	}
+}
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const [windows, setWindows] = useState<WindowData[]>([]);
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+	useEffect(() => {
+		const threeScript = document.createElement("script");
+		const vantaScript = document.createElement("script");
+		const backgroundScript = document.createElement("script");
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+		threeScript.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+		threeScript.type = "module";
+		threeScript.onload = () => {
+			vantaScript.src = "https://cdn.jsdelivr.net/npm/vanta/dist/vanta.waves.min.js";
+			vantaScript.type = "module";
+			vantaScript.onload = () => {
+				backgroundScript.type = "text/javascript";
+				backgroundScript.text = `
+					VANTA.WAVES({
+						el: ".VANTA",
+					  mouseControls: false,
+					  touchControls: false,
+					  gyroControls: false,
+					  minHeight: 200.00,
+					  minWidth: 200.00,
+					  scale: 1.00,
+					  scaleMobile: 1.00,
+					  color: 0x421c72,
+					  shininess: 45.00,
+					  waveHeight: 23.50,
+					  waveSpeed: 0.80,
+					})
+				`;
+				document.head.appendChild(backgroundScript);
+			};
+			document.head.appendChild(vantaScript);
+		};
+		document.head.appendChild(threeScript);
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+		return () => {
+			if(threeScript) threeScript.remove();
+			if(vantaScript) vantaScript.remove();
+			if(backgroundScript) backgroundScript.remove();
+		}
+	}, []);
+	const bringToFront = (id: number) => {
+		setWindows((prevWindows) => {
+			let max = topZ(prevWindows);
+			return prevWindows.map(win => win.id === id ? { ...win, zIndex: win.zIndex === max ? max : max + 1 } : win);
+		})
+	}
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+	const topZ = (wins: WindowData[]): number => {
+		let x = Number.MIN_VALUE;
+		for (let win of wins) {
+			if (win.zIndex > x) x = win.zIndex
+		}
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+		return x;
+	}
+
+	const createWindow = (windowData: Omit<WindowData, "id" | "zIndex" | "maximized" | "minimized" | "isOpening" >): number => {
+		const id = Date.now();
+		setWindows((prevWindows) => {
+			const newWindow: WindowData = { ...windowData, zIndex: topZ(windows) + 1, id, maximized: false, minimized: false, isOpening: false };
+			return [...prevWindows, newWindow];
+		});
+		return id;
+	}
+
+	const closeWindow = (id: number) => {
+		setWindows((prevWindows) => [...prevWindows.filter(w => w.id !== id)]);
+	}
+
+	const maximizeWindow = (id: number) => {
+		setWindows((prevWindows) => prevWindows.map(win =>
+			win.id === id ? { ...win, maximized: !win.maximized } : win
+		));
+		openAnim(id);
+	}
+
+	const minimizeWindow = (id: number) => {
+		setWindows((prevWindows) => prevWindows.map(win => 
+			win.id === id ? { ...win, minimized: !win.minimized} : win
+		));
+		openAnim(id);
+	}
+
+	const openAnim = (id: number) => {
+		setWindows((prevWindows) => prevWindows.map(win => 
+			win.id === id ? { ...win, isOpening: true }: win
+		))
+		setTimeout(() => {
+			setWindows((prevWindows) => prevWindows.map(win => 
+				win.id === id ? { ...win, isOpening: false }: win
+			));
+		}, 280)
+	}
+
+	const launchApp = (app: App) => {
+		let id = createWindow({
+			title: app.title, default: {
+				x: 100,
+				y: 100,
+				width: window.innerWidth/2,
+				height: window.innerHeight/4*3,
+			}, content: (
+				<div className="w-full h-[calc(100%-30px)] rounded-[inherit] rounded-t-none overflow-hidden">
+					{app.content}
+				</div>
+			)
+		});
+		openAnim(id);
+	}
+
+	const rorApp = webApp("Realm of Riches", "https://realmofriches.org");
+	const browserApp = Browser("Eternity Browser"); 
+
+	return (
+		<div className="VANTA w-[100vw] h-[100vh] bg-no-repeat bg-center bg-cover">
+			<Content>
+				<h1>Welcome to PortalOS</h1>
+				<button onClick={() => {launchApp(rorApp); }}>
+					Launch ROR
+				</button><br />
+				<button onClick={() => launchApp(browserApp)}>
+					Launch Browser
+				</button>
+				{windows.map((window) => (
+					<Window
+						title={window.title}
+						key={window.id}
+						default={window.maximized ? { x: 0, y: 0, width: "100vw", height: "100vh" } : { ...window.default, ...window.state! } || window.default}
+						zIndex={window.zIndex}
+						className={`${window.minimized ?  'minimized' : window.isOpening ? "opening" : ""}`}
+						maximize={() => maximizeWindow(window.id)}
+						bringFront={() => { bringToFront(window.id) }}
+						close={() => closeWindow(window.id)}
+						minimize={() => { minimizeWindow(window.id); openAnim(window.id) }}
+					>
+						{window.content}
+					</Window>
+				))}
+
+				{windows.map((window) => window.minimized && (
+					<button key={window.id} onClick={() => { minimizeWindow(window.id) }}>{window.title}</button>
+				))}
+			</Content>
+			<TaskBar apps={windows.filter(win => win.minimized)} launchApp={() => launchApp(webApp("PortalOS", "https://example.com"))}/>
+		</div>
+	);
 }
