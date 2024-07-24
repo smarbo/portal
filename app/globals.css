@@ -73,6 +73,10 @@
 	animation: mini 0.3s ease-in-out forwards !important;
 }
 
+.MENU {
+	transition: all 0.2s ease-in-out;
+}
+
 html, body {
 	margin: 0;
 	padding: 0;

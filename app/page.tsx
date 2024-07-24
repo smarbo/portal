@@ -8,7 +8,7 @@ import { Props } from "react-rnd";
 import App, { webApp } from "./types/App.tsx";
 import Browser from "./components/apps/Browser.tsx";
 
-type WindowData = {
+export type WindowData = {
 	id: number;
 	title: string;
 	default: Props["default"];
@@ -17,6 +17,7 @@ type WindowData = {
 	minimized: boolean;
 	zIndex: number;
 	isOpening: boolean;
+	iconURL: string;
 	state?: {
 		x: number;
 		y: number;
@@ -84,7 +85,7 @@ export default function Home() {
 		return x;
 	}
 
-	const createWindow = (windowData: Omit<WindowData, "id" | "zIndex" | "maximized" | "minimized" | "isOpening" >): number => {
+	const createWindow = (windowData: Omit<WindowData, "id" | "zIndex" | "maximized" | "minimized" | "isOpening">): number => {
 		const id = Date.now();
 		setWindows((prevWindows) => {
 			const newWindow: WindowData = { ...windowData, zIndex: topZ(windows) + 1, id, maximized: false, minimized: false, isOpening: false };
@@ -124,7 +125,7 @@ export default function Home() {
 
 	const launchApp = (app: App) => {
 		let id = createWindow({
-			title: app.title, default: {
+			title: app.title, iconURL: app.iconURL, default: {
 				x: 100,
 				y: 100,
 				width: window.innerWidth/2,
@@ -138,8 +139,9 @@ export default function Home() {
 		openAnim(id);
 	}
 
-	const rorApp = webApp("Realm of Riches", "https://realmofriches.org");
-	const browserApp = Browser("Eternity Browser"); 
+	const rorApp = webApp("Realm of Riches", "https://realmofriches.org", "https://realmofriches.org/favicon.ico");
+	const munchboxApp = webApp("Munchbox", "https://munchbox.vercel.app", "https://munchbox.vercel.app/favicon.ico");
+	const browserApp = Browser("Eternity"); 
 
 	return (
 		<div className="VANTA w-[100vw] h-[100vh] bg-no-repeat bg-center bg-cover">
@@ -150,6 +152,9 @@ export default function Home() {
 				</button><br />
 				<button onClick={() => launchApp(browserApp)}>
 					Launch Browser
+				</button><br />
+				<button onClick={() => launchApp(munchboxApp)}>
+					Launch Munchbox
 				</button>
 				{windows.map((window) => (
 					<Window
@@ -167,11 +172,9 @@ export default function Home() {
 					</Window>
 				))}
 
-				{windows.map((window) => window.minimized && (
-					<button key={window.id} onClick={() => { minimizeWindow(window.id) }}>{window.title}</button>
-				))}
+				
 			</Content>
-			<TaskBar apps={windows.filter(win => win.minimized)} launchApp={() => launchApp(webApp("PortalOS", "https://example.com"))}/>
+			<TaskBar minimize={minimizeWindow} windows={windows} />
 		</div>
 	);
 }

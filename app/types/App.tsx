@@ -7,19 +7,19 @@ type App = {
 	iconURL: string,
 }
 
-export function webApp(title: string, url: string): App {
+export function webApp(title: string, url: string, iconURL?: string): App {
 	let newApp: App = {
 		title,
 		content: (
 			<WebFrame src={url} />
 		),
-		iconURL: "https://www.svgrepo.com/show/321236/portal.svg"
+		iconURL: iconURL || "https://www.svgrepo.com/show/321236/portal.svg"
 	}
 
 	return newApp;
 }
 
-export function classicApp(title: string, content: ReactNode): App {
+export function classicApp(title: string, content: ReactNode, iconURL?: string): App {
 	let newApp: App = {
 		title,
 		content: (
@@ -27,7 +27,7 @@ export function classicApp(title: string, content: ReactNode): App {
 				{content}
 			</div>	
 		),
-		iconURL: "https://www.svgrepo.com/show/321236/portal.svg"
+		iconURL: iconURL || "https://www.svgrepo.com/show/321236/portal.svg"
 	}
 
 	return newApp;

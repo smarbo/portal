@@ -79,18 +79,19 @@ function BrowserNode() {
 				<ToolbarShortcut setURL={loadPage} domain="https://www.google.com" suffix="/webhp?igu=1" />
 				<ToolbarShortcut setURL={loadPage} domain="https://archive.org" />
 				<ToolbarShortcut setURL={loadPage} domain="https://dustinbrett.com" />
+				<ToolbarShortcut setURL={loadPage} domain="https://photopea.com" faviconURL="https://www.photopea.com/promo/icon512.png" />
 			</div>
 			<WebFrame key={key} src={currentURL} />
 		</div>
 	);
 }
 
-function ToolbarShortcut({ domain, suffix, setURL }: { domain: string, suffix?: string, setURL: Function }) {
+function ToolbarShortcut({ domain, suffix, setURL, faviconURL }: { domain: string, suffix?: string, setURL: Function, faviconURL?: string }) {
 	return (
-		<button onClick={() => {setURL(`${domain}${suffix || ""}`)}} style={{backgroundImage: `url(${domain}/favicon.ico)`}} className={`bg-cover rounded-[50%] w-[20px] h-[20px]`}></button>
+		<button onClick={() => {setURL(`${domain}${suffix || ""}`)}} style={{backgroundImage: `url(${faviconURL || `${domain}/favicon.ico)`}`}} className={`bg-cover rounded-[50%] w-[20px] h-[20px]`}></button>
 	)
 }
 
 export default function Browser(title: string): App {
-	return classicApp(title, <BrowserNode />);
+	return classicApp(title, <BrowserNode />, "/eternity.png");
 }
