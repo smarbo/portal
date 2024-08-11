@@ -21,6 +21,14 @@
 	}
 }
 
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @keyframes maxi {
 	from {
 		scale: 1;	
@@ -29,7 +37,7 @@
 	to {
 		transform: translate(0px, 0px);
 		width: 100vw;
-		height: 100vh;
+		height: 100dvh;
 	}
 }
 
@@ -57,8 +65,91 @@
 	}
 }
 
+@keyframes openmenu {
+  0% {
+		opacity: 0;
+		display: none;
+		bottom: -400px;
+	}
+
+	1% {
+		display: flex;
+		bottom: -400px;
+		opacity: 0;
+	}
+
+	100% {
+		bottom: 42px;
+		opacity: 1;
+	}
+}
+
+@keyframes closemenu {
+	from {
+		opacity: 1;
+		display: flex;
+		bottom: 42px;
+	}
+
+	to {
+		opacity: 0;
+		bottom: -400px;
+		display: none;
+	}
+}
+
 .closing-animation {
 	animation: close 0.3s ease-in-out forwards;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinners {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner-container {
+  position: absolute;
+}
+
+.spinny {
+  animation: spin 2s linear infinite;
+  transform-origin: center;
+}
+
+.spinny.small {
+  animation-duration: 1s;
+}
+
+.spinny.medium {
+  animation-duration: 1.5s;
+}
+
+.spinny.large {
+  animation-duration: 3.5s;
+}
+.menuopen {
+	animation: openmenu 0.3s ease-in-out forwards;
+}
+
+.menuclose {
+	animation: closemenu 0.3s ease-in-out forwards;
+}
+
+.menuopen, .menuclose {
+	flex-direction: column;
 }
 
 .opening {
@@ -77,11 +168,13 @@
 	transition: all 0.2s ease-in-out;
 }
 
-html, body {
+html, body>div {
 	margin: 0;
 	padding: 0;
-	width: 100vw;
-	height: 100vh;
+	width: 100dvw;
+	height: 100dvh;
+	max-width: 100dvw;
+	max-height: 100dvh;
 	overflow: hidden;
 }
 

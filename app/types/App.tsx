@@ -13,7 +13,7 @@ export function webApp(title: string, url: string, iconURL?: string): App {
 		content: (
 			<WebFrame src={url} />
 		),
-		iconURL: iconURL || "https://www.svgrepo.com/show/321236/portal.svg"
+		iconURL: iconURL || `${url}/favicon.ico`
 	}
 
 	return newApp;

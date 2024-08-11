@@ -5,8 +5,11 @@ import Content from "./components/Content.tsx";
 import TaskBar from "./components/TaskBar.tsx";
 import Window from "./components/Window.tsx";
 import { Props } from "react-rnd";
-import App, { webApp } from "./types/App.tsx";
+import App, { classicApp, webApp } from "./types/App.tsx";
 import Browser from "./components/apps/Browser.tsx";
+import Loading from "./components/Loading.tsx";
+import dynamic from "next/dynamic";
+const XTerm = dynamic(()=>import("./components/XTerm.tsx"));
 
 export type WindowData = {
 	id: number;
@@ -28,36 +31,22 @@ export type WindowData = {
 
 export default function Home() {
 	const [windows, setWindows] = useState<WindowData[]>([]);
+	const [loaded, setLoaded] = useState<boolean>(false);
 
 	useEffect(() => {
 		const threeScript = document.createElement("script");
 		const vantaScript = document.createElement("script");
 		const backgroundScript = document.createElement("script");
 
-		threeScript.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+		threeScript.src = "/three.js";
 		threeScript.type = "module";
 		threeScript.onload = () => {
-			vantaScript.src = "https://cdn.jsdelivr.net/npm/vanta/dist/vanta.waves.min.js";
+			vantaScript.src = "/waves.js";
 			vantaScript.type = "module";
 			vantaScript.onload = () => {
-				backgroundScript.type = "text/javascript";
-				backgroundScript.text = `
-					VANTA.WAVES({
-						el: ".VANTA",
-					  mouseControls: false,
-					  touchControls: false,
-					  gyroControls: false,
-					  minHeight: 200.00,
-					  minWidth: 200.00,
-					  scale: 1.00,
-					  scaleMobile: 1.00,
-					  color: 0x421c72,
-					  shininess: 45.00,
-					  waveHeight: 23.50,
-					  waveSpeed: 0.80,
-					})
-				`;
+				backgroundScript.src = "/vantaSetup.js"
 				document.head.appendChild(backgroundScript);
+				setLoaded(true);
 			};
 			document.head.appendChild(vantaScript);
 		};
@@ -139,42 +128,65 @@ export default function Home() {
 		openAnim(id);
 	}
 
-	const rorApp = webApp("Realm of Riches", "https://realmofriches.org", "https://realmofriches.org/favicon.ico");
-	const munchboxApp = webApp("Munchbox", "https://munchbox.vercel.app", "https://munchbox.vercel.app/favicon.ico");
-	const browserApp = Browser("Eternity"); 
+	const rorApp = webApp("Realm of Riches", "https://realmofriches.org");
+	const munchboxApp = webApp("Munchbox", "https://munchbox.vercel.app");
+	const wikiApp = webApp("Wikipedia", "https://en.wikipedia.org");
+	const doomApp = webApp("Doom", "/doom/index.html", "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/efd55d2f-11a4-4df1-9bf7-1eccd3ebb813/d3hsp3f-094f83e1-40a9-4d57-a31d-31a74c7cac89.png");
+	const eternityApp = Browser("Eternity"); 
+	const terminalApp = classicApp("Terminal", (
+		<XTerm />
+	))
+
+	const menuShortcuts = [
+		rorApp,
+		doomApp,
+		eternityApp,
+		wikiApp,
+	]; // maximum 4;
 
 	return (
-		<div className="VANTA w-[100vw] h-[100vh] bg-no-repeat bg-center bg-cover">
-			<Content>
-				<h1>Welcome to PortalOS</h1>
-				<button onClick={() => {launchApp(rorApp); }}>
-					Launch ROR
-				</button><br />
-				<button onClick={() => launchApp(browserApp)}>
-					Launch Browser
-				</button><br />
-				<button onClick={() => launchApp(munchboxApp)}>
-					Launch Munchbox
-				</button>
-				{windows.map((window) => (
-					<Window
-						title={window.title}
-						key={window.id}
-						default={window.maximized ? { x: 0, y: 0, width: "100vw", height: "100vh" } : { ...window.default, ...window.state! } || window.default}
-						zIndex={window.zIndex}
-						className={`${window.minimized ?  'minimized' : window.isOpening ? "opening" : ""}`}
-						maximize={() => maximizeWindow(window.id)}
-						bringFront={() => { bringToFront(window.id) }}
-						close={() => closeWindow(window.id)}
-						minimize={() => { minimizeWindow(window.id); openAnim(window.id) }}
-					>
-						{window.content}
-					</Window>
-				))}
+		<>
+			{
+				(() => {
+					if(!loaded){
+						return (
+							<Loading />
+						)
+					}
+				})()
+			}
+			<div className="VANTA absolute w-[100vw] h-[100dvh] bg-no-repeat bg-center bg-cover">
+				<Content>
+					<h1>Welcome to PortalOS</h1>
+					<button onClick={() => {launchApp(terminalApp); }}>
+						Launch Terminal
+					</button><br />
+					<button onClick={() => launchApp(eternityApp)}>
+						Launch Browser
+					</button><br />
+					<button onClick={() => launchApp(munchboxApp)}>
+						Launch Munchbox
+					</button>
+					{windows.map((window) => (
+						<Window
+							title={window.title}
+							key={window.id}
+							default={window.maximized ? { x: 0, y: 0, width: "100vw", height: "100vh" } : { ...window.default, ...window.state! } || window.default}
+							zIndex={window.zIndex}
+							className={`${window.minimized ?  'minimized' : window.isOpening ? "opening" : ""}`}
+							maximize={() => maximizeWindow(window.id)}
+							bringFront={() => { bringToFront(window.id) }}
+							close={() => closeWindow(window.id)}
+							minimize={() => { minimizeWindow(window.id); openAnim(window.id) }}
+							>
+							{window.content}
+						</Window>
+					))}
 
-				
-			</Content>
-			<TaskBar minimize={minimizeWindow} windows={windows} />
-		</div>
+
+				</Content>
+				<TaskBar browser={eternityApp} shortcuts={menuShortcuts} launchApp={launchApp} minimize={minimizeWindow} windows={windows} />
+			</div>
+		</>
 	);
 }
